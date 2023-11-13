@@ -37,3 +37,4 @@
 <br>
 
 ## 🚀 데이터 파이프라인
+![aws아키텍처](https://github.com/zisu17/CloudDataPipeline/assets/108858121/cc20f2f9-a50d-4f05-89b5-77790dd0215c)
