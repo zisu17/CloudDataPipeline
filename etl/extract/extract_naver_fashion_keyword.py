@@ -2,6 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
+import json
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
+
 def extract_naver_fashion_keyword():
     driver_path = '/Users/sonjisu/PycharmProjects/cloud-data-pipeline/etl/infra/chromedriver'
     service = Service(executable_path=driver_path)
@@ -40,3 +45,22 @@ def extract_naver_fashion_keyword():
 
     return keyword_list
 
+
+def extract_naver_fashion_keyword2():
+    datalab_url = "https://datalab.naver.com/shoppingInsight/getCategoryKeywordRank.naver"
+    yesterday = datetime.now() - timedelta(days=1)
+    end_date = yesterday.strftime("%Y-%m-%d")
+    start_date = yesterday.strftime("%Y-%m-%d")
+    payload = f'cid=50000167&timeUnit=date&startDate={start_date}&endDate={end_date}&age=20%2C30&gender=f&device=%20&page=1&count=20'
+    headers = {
+      'Referer': 'https://datalab.naver.com/shoppingInsight/sCategory.naver',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    respose = requests.request("POST", datalab_url, headers=headers, data=payload)
+    soup = BeautifulSoup(respose.text, 'lxml')
+
+    json_data = json.loads(soup.p.text)
+
+    keywords = [item['keyword'] for item in json_data['ranks']]
+    return keywords
